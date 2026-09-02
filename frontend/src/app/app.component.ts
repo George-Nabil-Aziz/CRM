@@ -85,6 +85,18 @@ const DARK_MODE_KEY = 'crm-dark-mode';
       font-size: 1.1rem; cursor: pointer;
     }
     .theme-toggle:hover { border-color: var(--primary); }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 64px; }
+      .sidebar .brand-name, .sidebar .label, .toggle-btn { display: none; }
+      .sidebar .brand { justify-content: center; padding: 0; gap: 0; }
+      .sidebar a { justify-content: center; }
+      .content { padding: 1rem; }
+      .theme-toggle { top: 0.75rem; right: 0.75rem; }
+    }
+    @media (max-width: 480px) {
+      .content { padding: 0.75rem; }
+    }
   `]
 })
 export class AppComponent {

@@ -92,7 +92,7 @@ import { DashboardResponse, Ticket } from '../models';
     </div>
   `,
   styles: [`
-    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
     .stat-label { color: var(--muted); font-size: 0.85rem; }
     .stat-value { font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem; }
     .of5 { font-size: 1rem; color: var(--muted); }

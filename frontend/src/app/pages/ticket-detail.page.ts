@@ -122,11 +122,15 @@ const STATUS_TRANSITIONS: Record<string, string[]> = {
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
     .btn-row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
     .btn-row input, .btn-row select { width: auto; flex: 1; margin-bottom: 0; }
-    .ai-box { background: #F5F3FF; border: 1px solid #DDD6FE; border-radius: 6px; padding: 0.6rem 0.75rem; font-size: 0.9rem; }
+    .ai-box { background: var(--row-hover); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 0.6rem 0.75rem; font-size: 0.9rem; }
     .thread { display: flex; flex-direction: column; gap: 0.6rem; max-height: 320px; overflow-y: auto; }
     .msg { border-left: 3px solid var(--primary); padding-left: 0.6rem; }
     .msg-meta { font-size: 0.75rem; color: var(--muted); }
     .timeline { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.4rem; }
+
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
   `]
 })
 export class TicketDetailPage implements OnInit {
