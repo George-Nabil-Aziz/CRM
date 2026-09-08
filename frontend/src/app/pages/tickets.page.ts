@@ -16,16 +16,16 @@ import { Customer, Ticket } from '../models';
       <h3>New ticket</h3>
       <form (ngSubmit)="create()" novalidate>
         <label>Customer</label>
-        <select [(ngModel)]="form.customerId" name="customerId" [class.invalid]="fieldErrors.customerId">
+        <select [(ngModel)]="form.customerId" name="customerId" [class.invalid]="fieldErrors['customerId']">
           <option value="" disabled selected>Select a customer…</option>
           @for (c of customers; track c.id) {
             <option [value]="c.id">{{ c.name }} ({{ c.email }})</option>
           }
         </select>
-        @if (fieldErrors.customerId) { <p class="field-error">{{ fieldErrors.customerId }}</p> }
+        @if (fieldErrors['customerId']) { <p class="field-error">{{ fieldErrors['customerId'] }}</p> }
         <label>Subject</label>
-        <input [(ngModel)]="form.subject" name="subject" [class.invalid]="fieldErrors.subject" />
-        @if (fieldErrors.subject) { <p class="field-error">{{ fieldErrors.subject }}</p> }
+        <input [(ngModel)]="form.subject" name="subject" [class.invalid]="fieldErrors['subject']" />
+        @if (fieldErrors['subject']) { <p class="field-error">{{ fieldErrors['subject'] }}</p> }
         <label>Category</label>
         <select [(ngModel)]="form.category" name="category">
           <option>General</option><option>Billing</option><option>Technical</option>

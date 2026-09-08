@@ -16,14 +16,14 @@ import { Customer } from '../models';
       <h3>New customer</h3>
       <form (ngSubmit)="create()" novalidate>
         <label>Name</label>
-        <input [(ngModel)]="form.name" name="name" [class.invalid]="fieldErrors.name" />
-        @if (fieldErrors.name) { <p class="field-error">{{ fieldErrors.name }}</p> }
+        <input [(ngModel)]="form.name" name="name" [class.invalid]="fieldErrors['name']" />
+        @if (fieldErrors['name']) { <p class="field-error">{{ fieldErrors['name'] }}</p> }
         <label>Email</label>
-        <input [(ngModel)]="form.email" name="email" type="email" [class.invalid]="fieldErrors.email" />
-        @if (fieldErrors.email) { <p class="field-error">{{ fieldErrors.email }}</p> }
+        <input [(ngModel)]="form.email" name="email" type="email" [class.invalid]="fieldErrors['email']" />
+        @if (fieldErrors['email']) { <p class="field-error">{{ fieldErrors['email'] }}</p> }
         <label>Phone</label>
-        <input [(ngModel)]="form.phone" name="phone" [class.invalid]="fieldErrors.phone" />
-        @if (fieldErrors.phone) { <p class="field-error">{{ fieldErrors.phone }}</p> }
+        <input [(ngModel)]="form.phone" name="phone" [class.invalid]="fieldErrors['phone']" />
+        @if (fieldErrors['phone']) { <p class="field-error">{{ fieldErrors['phone'] }}</p> }
         <button class="btn" type="submit" [disabled]="creating">{{ creating ? 'Creating…' : 'Create customer' }}</button>
         @if (error) { <p style="color: var(--danger)">{{ error }}</p> }
       </form>

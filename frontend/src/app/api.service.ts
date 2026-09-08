@@ -5,7 +5,7 @@ import {
   Article, Customer, DashboardResponse, InteractionEntry, Message, Note, Ticket, TicketEvent
 } from './models';
 
-const BASE = 'http://localhost:5080/api';
+const BASE = 'http://localhost:5110/api';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
