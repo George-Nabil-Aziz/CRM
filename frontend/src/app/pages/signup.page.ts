@@ -2,12 +2,19 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { ThemeService } from '../theme.service';
+import { I18nService } from '../i18n/i18n.service';
 
 @Component({
   standalone: true,
   imports: [FormsModule, RouterLink],
   template: `
     <div class="auth-page">
+      <button class="theme-toggle" type="button" (click)="theme.toggle()"
+              [title]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'">
+        {{ theme.isDark() ? '☀️' : '🌙' }}
+      </button>
+
       <div class="auth-card">
         <section class="pane form-pane">
           <div class="brand">
@@ -126,6 +133,7 @@ import { AuthService } from '../auth.service';
   `,
   styles: [`
     .auth-page {
+      position: relative;
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
       padding: 1.5rem; overflow-y: auto;
       background:
@@ -133,6 +141,15 @@ import { AuthService } from '../auth.service';
         radial-gradient(900px 500px at 105% 110%, rgba(21,128,61,0.18), transparent 55%),
         var(--bg);
     }
+    .theme-toggle {
+      position: absolute; top: 1.25rem; inset-inline-end: 1.5rem; z-index: 5;
+      width: 38px; height: 38px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--card); border: 1px solid var(--border); border-radius: 50%;
+      font-size: 1.05rem; cursor: pointer;
+    }
+    .theme-toggle:hover { border-color: var(--primary); }
+
     .auth-card {
       display: grid; grid-template-columns: 1fr 1fr;
       width: 100%; max-width: 940px;
@@ -144,7 +161,7 @@ import { AuthService } from '../auth.service';
     .form-pane { display: flex; flex-direction: column; }
     .info-pane {
       background: linear-gradient(160deg, rgba(109,40,217,0.06), rgba(21,128,61,0.06));
-      border-left: 1px solid var(--border);
+      border-inline-start: 1px solid var(--border);
     }
 
     .brand { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.75rem; }
@@ -161,13 +178,16 @@ import { AuthService } from '../auth.service';
 
     form { display: flex; flex-direction: column; }
     label { margin-top: 0.5rem; }
-    .password-row { position: relative; }
-    .password-row input { padding-right: 2.6rem; }
+    /* Margin on the wrapper, not the input — see login.page.ts for why. */
+    .password-row { position: relative; margin-bottom: 0.75rem; }
+    .password-row input { padding-inline-end: 2.6rem; margin-bottom: 0; }
     .peek {
-      position: absolute; top: 0; right: 0; height: 100%; width: 2.4rem;
+      position: absolute; top: 0; inset-inline-end: 0; height: 100%; width: 2.4rem;
       background: none; border: none; cursor: pointer; font-size: 1rem;
       display: flex; align-items: center; justify-content: center;
+      color: var(--muted); padding: 0; line-height: 1;
     }
+    .peek:hover { color: var(--text); }
     .error { color: var(--danger); font-size: 0.8rem; margin: 0.15rem 0 0; }
     .submit { width: 100%; margin-top: 1.25rem; padding: 0.65rem; font-size: 0.95rem; }
     .alt { margin: 1.25rem 0 0; font-size: 0.88rem; color: var(--muted); }
@@ -193,7 +213,7 @@ import { AuthService } from '../auth.service';
 
     @media (max-width: 860px) {
       .auth-card { grid-template-columns: 1fr; max-width: 460px; }
-      .info-pane { border-left: none; border-top: 1px solid var(--border); }
+      .info-pane { border-inline-start: none; border-top: 1px solid var(--border); }
       .pane { padding: 1.75rem 1.5rem; }
     }
   `]
@@ -201,6 +221,9 @@ import { AuthService } from '../auth.service';
 export class SignupPage {
   private auth = inject(AuthService);
   private router = inject(Router);
+
+  readonly theme = inject(ThemeService);
+  readonly i18n = inject(I18nService);
 
   name = '';
   email = '';

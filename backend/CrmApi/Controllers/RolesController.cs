@@ -41,6 +41,14 @@ public class RolesController(CrmDbContext db, AuditLogger audit) : ControllerBas
         return role is null ? NotFound() : Ok(ToResponse(role));
     }
 
+    // Story 46: the permissions editor needs every role, not one at a time.
+    [HttpGet]
+    public async Task<ActionResult<List<RoleResponse>>> List()
+    {
+        var roles = await db.Roles.OrderBy(r => r.Name).ToListAsync();
+        return Ok(roles.Select(ToResponse).ToList());
+    }
+
     // Story 46: Configure permissions
     [HttpPatch("{id:guid}/permissions")]
     public async Task<ActionResult<RoleResponse>> UpdatePermissions(Guid id, UpdatePermissionsRequest request)

@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../api.service';
+import { I18nService } from '../i18n/i18n.service';
 import { Customer, Message, Ticket, TicketEvent } from '../models';
 
 const STATUS_TRANSITIONS: Record<string, string[]> = {
@@ -124,7 +125,7 @@ const STATUS_TRANSITIONS: Record<string, string[]> = {
     .btn-row input, .btn-row select { width: auto; flex: 1; margin-bottom: 0; }
     .ai-box { background: var(--row-hover); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 0.6rem 0.75rem; font-size: 0.9rem; }
     .thread { display: flex; flex-direction: column; gap: 0.6rem; max-height: 320px; overflow-y: auto; }
-    .msg { border-left: 3px solid var(--primary); padding-left: 0.6rem; }
+    .msg { border-inline-start: 3px solid var(--primary); padding-inline-start: 0.6rem; }
     .msg-meta { font-size: 0.75rem; color: var(--muted); }
     .timeline { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.4rem; }
 
@@ -134,6 +135,8 @@ const STATUS_TRANSITIONS: Record<string, string[]> = {
   `]
 })
 export class TicketDetailPage implements OnInit {
+  readonly i18n = inject(I18nService);
+
   ticket: Ticket | null = null;
   customer: Customer | null = null;
   history: TicketEvent[] = [];

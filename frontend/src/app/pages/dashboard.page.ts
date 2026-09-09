@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../api.service';
+import { I18nService } from '../i18n/i18n.service';
 import { DashboardResponse, Ticket } from '../models';
 
 @Component({
@@ -9,35 +10,41 @@ import { DashboardResponse, Ticket } from '../models';
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
-    <h1>Dashboard</h1>
+    <h1>{{ i18n.t('dashboard.title') }}</h1>
 
     @if (dashboard) {
       <div class="grid">
         <div class="card stat">
-          <div class="stat-label">Open tickets</div>
+          <div class="stat-label">{{ i18n.t('dashboard.openTickets') }}</div>
           <div class="stat-value">{{ countFor('Open') }}</div>
         </div>
         <div class="card stat">
-          <div class="stat-label">Pending tickets</div>
+          <div class="stat-label">{{ i18n.t('dashboard.pendingTickets') }}</div>
           <div class="stat-value">{{ countFor('Pending') }}</div>
         </div>
         <div class="card stat">
-          <div class="stat-label">Resolved tickets</div>
+          <div class="stat-label">{{ i18n.t('dashboard.resolvedTickets') }}</div>
           <div class="stat-value">{{ countFor('Resolved') }}</div>
         </div>
         <div class="card stat">
-          <div class="stat-label">Avg. CSAT</div>
+          <div class="stat-label">{{ i18n.t('dashboard.avgCsat') }}</div>
           <div class="stat-value">{{ dashboard.csat.averageRating || '—' }}<span class="of5" *ngIf="dashboard.csat.averageRating">/5</span></div>
         </div>
       </div>
 
       <div class="card">
-        <h3>SLA Performance</h3>
+        <h3>{{ i18n.t('dashboard.slaPerformance') }}</h3>
         @if (dashboard.slaPerformance.length === 0) {
-          <p class="muted">No SLA-tracked tickets yet.</p>
+          <p class="muted">{{ i18n.t('dashboard.noSla') }}</p>
         } @else {
           <table>
-            <thead><tr><th>Category</th><th>Priority</th><th>Total</th><th>Met Target</th><th>Compliance</th></tr></thead>
+            <thead><tr>
+              <th>{{ i18n.t('field.category') }}</th>
+              <th>{{ i18n.t('field.priority') }}</th>
+              <th>{{ i18n.t('field.total') }}</th>
+              <th>{{ i18n.t('field.metTarget') }}</th>
+              <th>{{ i18n.t('field.compliance') }}</th>
+            </tr></thead>
             <tbody>
               @for (row of dashboard.slaPerformance; track row.category + row.priority) {
                 <tr>
@@ -54,12 +61,16 @@ import { DashboardResponse, Ticket } from '../models';
       </div>
 
       <div class="card">
-        <h3>Agent Performance</h3>
+        <h3>{{ i18n.t('dashboard.agentPerformance') }}</h3>
         @if (dashboard.agentPerformance.length === 0) {
-          <p class="muted">No assigned tickets yet.</p>
+          <p class="muted">{{ i18n.t('dashboard.noAgents') }}</p>
         } @else {
           <table>
-            <thead><tr><th>Agent</th><th>Tickets</th><th>Avg. resolution (hrs)</th></tr></thead>
+            <thead><tr>
+              <th>{{ i18n.t('field.agent') }}</th>
+              <th>{{ i18n.t('field.tickets') }}</th>
+              <th>{{ i18n.t('field.avgResolution') }}</th>
+            </tr></thead>
             <tbody>
               @for (row of dashboard.agentPerformance; track row.agentId) {
                 <tr><td>{{ row.agentName }}</td><td>{{ row.ticketCount }}</td><td>{{ row.averageResolutionHours }}</td></tr>
@@ -71,12 +82,20 @@ import { DashboardResponse, Ticket } from '../models';
     }
 
     <div class="card">
-      <h3>Recent tickets</h3>
+      <h3>{{ i18n.t('dashboard.recentTickets') }}</h3>
       @if (recentTickets.length === 0) {
-        <p class="muted">No tickets yet. <a routerLink="/tickets">Create one</a>.</p>
+        <p class="muted">
+          {{ i18n.t('dashboard.noTickets') }}
+          <a routerLink="/tickets">{{ i18n.t('dashboard.createOne') }}</a>
+        </p>
       } @else {
         <table>
-          <thead><tr><th>Number</th><th>Subject</th><th>Status</th><th>Priority</th></tr></thead>
+          <thead><tr>
+            <th>{{ i18n.t('field.number') }}</th>
+            <th>{{ i18n.t('field.subject') }}</th>
+            <th>{{ i18n.t('field.status') }}</th>
+            <th>{{ i18n.t('field.priority') }}</th>
+          </tr></thead>
           <tbody>
             @for (t of recentTickets; track t.id) {
               <tr [routerLink]="['/tickets', t.id]" style="cursor:pointer">
@@ -100,6 +119,8 @@ import { DashboardResponse, Ticket } from '../models';
   `]
 })
 export class DashboardPage implements OnInit {
+  readonly i18n = inject(I18nService);
+
   dashboard: DashboardResponse | null = null;
   recentTickets: Ticket[] = [];
 

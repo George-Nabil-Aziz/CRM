@@ -50,6 +50,27 @@ public class UsersController(CrmDbContext db, AuditLogger audit) : ControllerBas
         return user is null ? NotFound() : Ok(ToResponse(user, user.Role!.Name));
     }
 
+    // Story 45: the administration screen needs the roster, not just single lookups.
+    [HttpGet]
+    public async Task<ActionResult<List<UserResponse>>> List([FromQuery] Guid? roleId, [FromQuery] string? q)
+    {
+        var query = db.Users.Include(u => u.Role).AsQueryable();
+
+        if (roleId is not null)
+        {
+            query = query.Where(u => u.RoleId == roleId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            var term = q.Trim();
+            query = query.Where(u => EF.Functions.Like(u.Name, $"%{term}%") || EF.Functions.Like(u.Email, $"%{term}%"));
+        }
+
+        var users = await query.OrderBy(u => u.Name).ToListAsync();
+        return Ok(users.Select(u => ToResponse(u, u.Role!.Name)).ToList());
+    }
+
     private static UserResponse ToResponse(User u, string roleName) =>
         new(u.Id, u.Name, u.Email, u.RoleId, roleName, u.CreatedAt);
 }

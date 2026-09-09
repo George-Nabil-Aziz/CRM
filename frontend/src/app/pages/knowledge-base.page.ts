@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../api.service';
+import { I18nService } from '../i18n/i18n.service';
 import { Article } from '../models';
 
 @Component({
@@ -87,6 +88,8 @@ import { Article } from '../models';
   `]
 })
 export class KnowledgeBasePage implements OnInit {
+  readonly i18n = inject(I18nService);
+
   articles: Article[] = [];
   query = '';
   chatMessage = '';

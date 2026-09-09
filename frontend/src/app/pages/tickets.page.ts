@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../api.service';
+import { I18nService } from '../i18n/i18n.service';
 import { Customer, Ticket } from '../models';
 
 @Component({
@@ -94,6 +95,8 @@ import { Customer, Ticket } from '../models';
   `]
 })
 export class TicketsPage implements OnInit {
+  readonly i18n = inject(I18nService);
+
   tickets: Ticket[] = [];
   filteredTickets: Ticket[] = [];
   customers: Customer[] = [];

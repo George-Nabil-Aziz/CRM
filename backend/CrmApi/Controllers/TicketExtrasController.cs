@@ -72,6 +72,58 @@ public class TicketExtrasController(CrmDbContext db) : ControllerBase
         return CreatedAtAction(nameof(GetContext), new { id }, ToResponse(reminder));
     }
 
+    // Story 19: the agent workspace lists what is due, so reminders need a read side too.
+    [HttpGet("reminders")]
+    public async Task<ActionResult<List<ReminderResponse>>> GetReminders(Guid id, [FromQuery] bool includeDismissed = false)
+    {
+        var ticketExists = await db.Tickets.AnyAsync(t => t.Id == id);
+        if (!ticketExists)
+        {
+            return NotFound();
+        }
+
+        var query = db.Reminders.Where(r => r.TicketId == id);
+        if (!includeDismissed)
+        {
+            query = query.Where(r => !r.Dismissed);
+        }
+
+        var reminders = await query.OrderBy(r => r.DueAt).ToListAsync();
+        return Ok(reminders.Select(ToResponse).ToList());
+    }
+
+    [HttpPost("reminders/{reminderId:guid}/dismiss")]
+    public async Task<IActionResult> DismissReminder(Guid id, Guid reminderId)
+    {
+        var reminder = await db.Reminders.FirstOrDefaultAsync(r => r.Id == reminderId && r.TicketId == id);
+        if (reminder is null)
+        {
+            return NotFound();
+        }
+
+        reminder.Dismissed = true;
+        await db.SaveChangesAsync();
+        return NoContent();
+    }
+
+    // Story 21: the collaboration thread is only useful if it can be read back.
+    [HttpGet("internal-notes")]
+    public async Task<ActionResult<List<InternalNoteResponse>>> GetInternalNotes(Guid id)
+    {
+        var ticketExists = await db.Tickets.AnyAsync(t => t.Id == id);
+        if (!ticketExists)
+        {
+            return NotFound();
+        }
+
+        var notes = await db.InternalNotes
+            .Where(n => n.TicketId == id)
+            .OrderBy(n => n.CreatedAt)
+            .ToListAsync();
+
+        return Ok(notes.Select(ToResponse).ToList());
+    }
+
     // Story 21: Team collaboration
     [HttpPost("internal-notes")]
     public async Task<ActionResult<InternalNoteResponse>> AddInternalNote(Guid id, CreateInternalNoteRequest request)

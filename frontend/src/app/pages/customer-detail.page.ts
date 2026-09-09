@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../api.service';
+import { I18nService } from '../i18n/i18n.service';
 import { Customer, InteractionEntry } from '../models';
 
 @Component({
@@ -22,7 +23,7 @@ import { Customer, InteractionEntry } from '../models';
           <label>Address</label>
           <input [(ngModel)]="editForm.address" name="address" />
           <button class="btn" type="submit">Save</button>
-          @if (saved) { <span style="color: var(--success); margin-left: 0.5rem;">Saved.</span> }
+          @if (saved) { <span style="color: var(--success); margin-inline-start: 0.5rem;">Saved.</span> }
         </form>
       </div>
 
@@ -63,6 +64,8 @@ import { Customer, InteractionEntry } from '../models';
   `
 })
 export class CustomerDetailPage implements OnInit {
+  readonly i18n = inject(I18nService);
+
   customer: Customer | null = null;
   history: InteractionEntry[] = [];
   editForm = { phone: '', email: '', address: '' };

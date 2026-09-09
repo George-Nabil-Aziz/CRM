@@ -1,21 +1,29 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth.service';
-
-const DARK_MODE_KEY = 'crm-dark-mode';
+import { ThemeService } from './theme.service';
+import { I18nService } from './i18n/i18n.service';
 
 interface NavItem {
   path: string;
   icon: string;
-  label: string;
+  /** Looked up through I18nService so the sidebar follows the active language. */
+  labelKey: string;
   exact?: boolean;
 }
 
 const NAV: NavItem[] = [
-  { path: '/', icon: '📊', label: 'Dashboard', exact: true },
-  { path: '/tickets', icon: '🎫', label: 'Tickets' },
-  { path: '/customers', icon: '👥', label: 'Customers' },
-  { path: '/knowledge-base', icon: '📚', label: 'Knowledge Base' },
+  { path: '/', icon: '📊', labelKey: 'nav.dashboard', exact: true },
+  { path: '/workspace', icon: '🧰', labelKey: 'nav.workspace' },
+  { path: '/tickets', icon: '🎫', labelKey: 'nav.tickets' },
+  { path: '/customers', icon: '👥', labelKey: 'nav.customers' },
+  { path: '/knowledge-base', icon: '📚', labelKey: 'nav.knowledgeBase' },
+  { path: '/portal', icon: '🙋', labelKey: 'nav.portal' },
+  { path: '/channels', icon: '📨', labelKey: 'nav.channels' },
+  { path: '/reports', icon: '📈', labelKey: 'nav.reports' },
+  { path: '/automation', icon: '⏱️', labelKey: 'nav.automation' },
+  { path: '/organisation', icon: '🏢', labelKey: 'nav.organisation' },
+  { path: '/admin', icon: '🛡️', labelKey: 'nav.administration' },
 ];
 
 @Component({
@@ -28,16 +36,17 @@ const NAV: NavItem[] = [
         <nav class="sidebar" [class.collapsed]="sidebarCollapsed">
           <div class="brand">
             <span class="brand-mark">A</span>
-            <span class="brand-name">Azm CRM</span>
-            <button class="toggle-btn" type="button" (click)="sidebarCollapsed = !sidebarCollapsed" [title]="sidebarCollapsed ? 'Expand' : 'Collapse'">
-              {{ sidebarCollapsed ? '»' : '«' }}
+            <span class="brand-name">{{ i18n.t('app.name') }}</span>
+            <button class="toggle-btn" type="button" (click)="sidebarCollapsed = !sidebarCollapsed"
+                    [title]="sidebarCollapsed ? i18n.t('shell.expand') : i18n.t('shell.collapse')">
+              {{ collapseGlyph }}
             </button>
           </div>
 
           @for (item of nav(); track item.path) {
             <a [routerLink]="item.path" routerLinkActive="active"
-               [routerLinkActiveOptions]="{ exact: !!item.exact }" [title]="item.label">
-              <span class="icon">{{ item.icon }}</span><span class="label">{{ item.label }}</span>
+               [routerLinkActiveOptions]="{ exact: !!item.exact }" [title]="i18n.t(item.labelKey)">
+              <span class="icon">{{ item.icon }}</span><span class="label">{{ i18n.t(item.labelKey) }}</span>
             </a>
           }
 
@@ -49,14 +58,22 @@ const NAV: NavItem[] = [
               <span class="user-name">{{ user()!.displayName }}</span>
               <span class="user-role">{{ user()!.role }}</span>
             </span>
-            <button class="signout" type="button" (click)="signOut()" title="Sign out">⏻</button>
+            <button class="signout" type="button" (click)="signOut()" [title]="i18n.t('shell.signOut')">⏻</button>
           </div>
         </nav>
 
         <main class="content">
-          <button class="theme-toggle" type="button" (click)="toggleDarkMode()" [title]="darkMode ? 'Switch to light mode' : 'Switch to dark mode'">
-            {{ darkMode ? '☀️' : '🌙' }}
-          </button>
+          <div class="content-tools">
+            @if (i18n.switcherEnabled) {
+              <button class="tool lang" type="button" (click)="i18n.toggle()" [title]="i18n.t('shell.languageTitle')">
+                {{ i18n.t('shell.language') }}
+              </button>
+            }
+            <button class="tool" type="button" (click)="theme.toggle()"
+                    [title]="theme.isDark() ? i18n.t('shell.toLight') : i18n.t('shell.toDark')">
+              {{ theme.isDark() ? '☀️' : '🌙' }}
+            </button>
+          </div>
           <router-outlet />
         </main>
       </div>
@@ -135,13 +152,18 @@ const NAV: NavItem[] = [
       flex: 1; padding: 1.5rem 2rem; overflow-y: auto; height: 100vh;
       background: var(--bg); position: relative;
     }
-    .theme-toggle {
-      position: absolute; top: 1.1rem; right: 1.5rem; z-index: 5;
-      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-      background: var(--card); border: 1px solid var(--border); border-radius: 50%;
-      font-size: 1.1rem; cursor: pointer;
+    .content-tools {
+      position: absolute; top: 1.1rem; inset-inline-end: 1.5rem; z-index: 5;
+      display: flex; align-items: center; gap: 0.5rem;
     }
-    .theme-toggle:hover { border-color: var(--primary); }
+    .tool {
+      height: 36px; min-width: 36px; padding: 0 0.5rem; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+      font: inherit; font-size: 1.1rem; cursor: pointer; color: var(--text);
+    }
+    .tool.lang { font-size: 0.8rem; font-weight: 600; }
+    .tool:hover { border-color: var(--primary); }
 
     @media (max-width: 768px) {
       .sidebar { width: 64px; }
@@ -151,7 +173,7 @@ const NAV: NavItem[] = [
       .sidebar .user { justify-content: center; padding: 0.55rem 0; }
       .sidebar .user-meta, .sidebar .signout { display: none; }
       .content { padding: 1rem; }
-      .theme-toggle { top: 0.75rem; right: 0.75rem; }
+      .content-tools { top: 0.75rem; inset-inline-end: 0.75rem; }
     }
     @media (max-width: 480px) {
       .content { padding: 0.75rem; }
@@ -162,7 +184,16 @@ export class AppComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
 
+  readonly theme = inject(ThemeService);
+  readonly i18n = inject(I18nService);
   readonly user = this.auth.current;
+
+  /** The chevron has to point outward, which is the opposite direction in RTL. */
+  get collapseGlyph(): string {
+    const expand = this.i18n.isRtl ? '«' : '»';
+    const collapse = this.i18n.isRtl ? '»' : '«';
+    return this.sidebarCollapsed ? expand : collapse;
+  }
 
   /** Only the routes this persona is offered. Not enforced by the API — see auth.service.ts. */
   readonly nav = computed(() => {
@@ -171,25 +202,9 @@ export class AppComponent {
   });
 
   sidebarCollapsed = false;
-  darkMode = false;
-
-  constructor() {
-    this.darkMode = localStorage.getItem(DARK_MODE_KEY) === '1';
-    this.applyTheme();
-  }
 
   signOut() {
     this.auth.signOut();
     this.router.navigateByUrl('/login');
-  }
-
-  toggleDarkMode() {
-    this.darkMode = !this.darkMode;
-    localStorage.setItem(DARK_MODE_KEY, this.darkMode ? '1' : '0');
-    this.applyTheme();
-  }
-
-  private applyTheme() {
-    document.documentElement.classList.toggle('dark', this.darkMode);
   }
 }
