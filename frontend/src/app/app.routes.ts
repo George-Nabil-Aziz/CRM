@@ -7,8 +7,6 @@ import { TicketDetailPage } from './pages/ticket-detail.page';
 import { KnowledgeBasePage } from './pages/knowledge-base.page';
 import { LoginPage } from './pages/login.page';
 import { SignupPage } from './pages/signup.page';
-import { AssistantPage } from './pages/assistant.page';
-import { TeamPage } from './pages/team.page';
 import { authGuard, guestGuard } from './auth.guard';
 
 export const routes: Routes = [
@@ -21,8 +19,6 @@ export const routes: Routes = [
   { path: 'tickets', component: TicketsPage, canActivate: [authGuard] },
   { path: 'tickets/:id', component: TicketDetailPage, canActivate: [authGuard] },
   { path: 'knowledge-base', component: KnowledgeBasePage, canActivate: [authGuard] },
-  { path: 'assistant', component: AssistantPage, canActivate: [authGuard] },
-  { path: 'team', component: TeamPage, canActivate: [authGuard] },
 
   { path: '**', redirectTo: '' }
 ];

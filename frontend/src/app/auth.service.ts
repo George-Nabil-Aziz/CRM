@@ -27,8 +27,8 @@ export interface Persona {
   displayName: string;
   role: string;
   description: string;
-  /** Capability keys checked against nav.model.ts to decide each sidebar item's state. Not enforced by the API. */
-  capabilities: string[];
+  /** Sidebar routes this persona is offered. Not enforced by the API. */
+  routes: string[];
   avatar: string;
   accent: string;
 }
@@ -42,7 +42,7 @@ export const PERSONAS: Persona[] = [
     displayName: 'Administrator',
     role: 'Admin',
     description: 'Configures the platform — users, roles, settings, integrations, audit.',
-    capabilities: ['ticket:view', 'customer:view', 'article:view', 'report:view', 'user:manage', 'department:manage', 'sla:manage'],
+    routes: ['/', '/tickets', '/customers', '/knowledge-base'],
     avatar: 'AD',
     accent: '#6D28D9',
   },
@@ -53,7 +53,7 @@ export const PERSONAS: Persona[] = [
     displayName: 'Support Manager',
     role: 'Manager',
     description: 'Watches workload, SLA performance and escalations across the team.',
-    capabilities: ['ticket:view', 'customer:view', 'article:view', 'report:view'],
+    routes: ['/', '/tickets', '/customers', '/knowledge-base'],
     avatar: 'MG',
     accent: '#0E7490',
   },
@@ -64,7 +64,7 @@ export const PERSONAS: Persona[] = [
     displayName: 'Support Agent',
     role: 'Agent',
     description: 'Works the queue — categorise, assign, reply, escalate, resolve.',
-    capabilities: ['ticket:view', 'customer:view', 'article:view'],
+    routes: ['/', '/tickets', '/customers', '/knowledge-base'],
     avatar: 'AG',
     accent: '#B45309',
   },
@@ -75,7 +75,7 @@ export const PERSONAS: Persona[] = [
     displayName: 'Customer',
     role: 'Customer',
     description: 'Submits requests, tracks them, and reads the knowledge base.',
-    capabilities: ['article:view'],
+    routes: ['/', '/knowledge-base'],
     avatar: 'CU',
     accent: '#15803D',
   },
