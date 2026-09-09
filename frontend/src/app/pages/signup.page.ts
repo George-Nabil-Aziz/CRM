@@ -132,9 +132,10 @@ import { I18nService } from '../i18n/i18n.service';
     </div>
   `,
   styles: [`
+    /* height + margin:auto centring — see login.page.ts for why min-height clips here. */
     .auth-page {
       position: relative;
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      height: 100vh; display: flex; justify-content: center;
       padding: 1.5rem; overflow-y: auto;
       background:
         radial-gradient(1100px 600px at 8% -10%, rgba(109,40,217,0.22), transparent 60%),
@@ -151,6 +152,7 @@ import { I18nService } from '../i18n/i18n.service';
     .theme-toggle:hover { border-color: var(--primary); }
 
     .auth-card {
+      margin: auto;
       display: grid; grid-template-columns: 1fr 1fr;
       width: 100%; max-width: 940px;
       background: var(--card); border: 1px solid var(--border);

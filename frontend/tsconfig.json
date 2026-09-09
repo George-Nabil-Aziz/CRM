@@ -4,6 +4,9 @@
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
+    /* Stated explicitly rather than inferred: TypeScript 6 stops computing the common source
+       directory for you. Every config here only ever includes files under src/. */
+    "rootDir": "./src",
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

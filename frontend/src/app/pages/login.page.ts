@@ -128,11 +128,19 @@ import { I18nService } from '../i18n/i18n.service';
   `,
   styles: [
     `
+      /*
+       * height, not min-height: global styles set overflow hidden on html and body, so a
+       * container taller than the viewport gets clipped with no way to reach the rest. Pinning
+       * it to the viewport gives its own overflow-y something to scroll.
+       *
+       * Centring uses an auto margin on the card rather than align-items center, because a
+       * centred flex item that outgrows its container overflows equally in both directions and
+       * the top scrolls out of reach. Auto margins collapse to zero instead.
+       */
       .auth-page {
         position: relative;
-        min-height: 100vh;
+        height: 100vh;
         display: flex;
-        align-items: center;
         justify-content: center;
         padding: 1.5rem;
         overflow-y: auto;
@@ -183,6 +191,7 @@ import { I18nService } from '../i18n/i18n.service';
       }
 
       .auth-card {
+        margin: auto;
         display: grid;
         grid-template-columns: 1fr 1fr;
         width: 100%;
